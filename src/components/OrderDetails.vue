@@ -9,6 +9,8 @@
         <div><LinkPathNav :route="`orders/${orderId}`" :clickableSegments="[0, 1]" /></div>
 
         <h2 class="text-3xl font-bold ml-4">Detalhes do Pedido</h2>
+        <p class="text-xl text-blue ml-4 mt-2"><a :href="'/stores/' + order.store_id"> Ir para loja</a></p>
+
         <div class="flex ml-4 mt-4 mb-4 space-x-4">
           <v-card :class="getOrderCardClass(order.state)">
             <v-card-title>ID: #{{ order.id }}</v-card-title>
@@ -19,18 +21,6 @@
           <div>
             <h3>Ações</h3>
             <div class="order-action flex flex-col space-y-2">
-              <v-btn
-                color="light-blue-darken-3"
-                :disabled="!isStateActive('accept')"
-                @click.prevent="isStateActive('accept')? handleUpdateOrderState(order.id, 'accept') : null"
-              >Aceitar</v-btn>
-
-              <v-btn
-                color="green-darken-4"
-                :disabled="!isStateActive('dispatch')"
-                @click.prevent="isStateActive('dispatch')? handleUpdateOrderState(order.id, 'dispatch') : null"
-              >Enviar</v-btn>
-
               <v-btn
                 color="red"
                 :disabled="!isStateActive('cancel')"

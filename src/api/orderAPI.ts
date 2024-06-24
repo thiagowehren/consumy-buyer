@@ -22,9 +22,10 @@ export async function getOrder(orderId: string): Promise<OrderResponse> {
     return response;
 }
 
-export async function getAllUserOrders(): Promise<OrdersResponse> {
-    const response = await request<OrdersResponse>(`buyers/orders/`, {
-        method: "GET"
+export async function getAllUserOrders(page: number = 1): Promise<OrdersResponse> {
+    const response = await request<OrdersResponse>(`/buyers/orders`, {
+        method: "GET",
+        params: { page }
     })
     if (!response) {
         throw new Error("Failed to fetch orders.");

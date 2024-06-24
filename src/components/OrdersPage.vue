@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getAllStores } from '@/api/storeAPI';
-import { getAllStoreOrders } from '@/api/orderAPI';
+import { getAllUserOrders } from '@/api/orderAPI';
 import { OrderResponse } from '@/dtos/orderDTO';
 import { StoreResponse } from '@/dtos/storeDTO';
 import { Pagination } from '@/dtos/paginationDTO';
@@ -10,35 +9,23 @@ import UserNavigation from '@/components/UserNavigation.vue';
 import OrderModal from '@/components/OrderModal.vue';
 import defaultShopImage from '@/assets/shop-default-256.png';
 
-const stores = ref<StoreResponse[]>([]);
 const orders = ref<OrderResponse[]>([]);
-const currentStoreId = ref<string | null>(null);
-const storePagination = ref<Pagination>({ current: 1, pages: 1 });
 const orderPagination = ref<Pagination>({ current: 1, pages: 1 });
 const dialogOrderDetails = ref(false);
 const selectedOrder = ref<OrderResponse | null>(null);
 
 onMounted(() => {
-  fetchStores();
+  fetchOrders(1);
 });
 
-const fetchStores = async (page = 1) => {
-  try {
-    const response = await getAllStores(page);
-    stores.value.push(...response.stores);
-    storePagination.value = response.pagination;
-  } catch (error) {
-    console.error('Failed to fetch stores', error);
-  }
-};
 
-const fetchOrders = async (storeId: string, page = 1) => {
-  if (currentStoreId.value && page === 1) {
+const fetchOrders = async (page = 1) => {
+  if (page === 1) {
     orders.value = [];
   }
 
   try {
-    const response = await getAllStoreOrders(storeId, page);
+    const response = await getAllUserOrders(page);
     orders.value.push(...response.orders);
     orderPagination.value = response.pagination;
   } catch (error) {
@@ -46,21 +33,10 @@ const fetchOrders = async (storeId: string, page = 1) => {
   }
 };
 
-const fetchMoreStores = () => {
-  if (storePagination.value.next) {
-    fetchStores(storePagination.value.current + 1);
-  }
-};
-
 const fetchMoreOrders = () => {
   if (orderPagination.value.next) {
-    fetchOrders(currentStoreId.value as string, orderPagination.value.current + 1);
+    fetchOrders(orderPagination.value.current + 1);
   }
-};
-
-const handleStoreSelected = (storeId: string) => {
-  currentStoreId.value = storeId;
-  fetchOrders(currentStoreId.value);
 };
 
 const openOrderDetails = (order: OrderResponse) => {
@@ -100,40 +76,12 @@ const closeModal = () => {
 
       <section>
         <div class="ml-6">
-          <h1 class="text-3xl font-bold ">Orders</h1>
+          <h1 class="text-3xl font-bold ">Meus Pedidos</h1>
         </div>
-        <p v-if="stores.length === 0">Aviso: Não há lojas para serem selecionadas.</p>
-
-        <div class="store-carousel bg-grey-lighten-4 mx-10">
-          <div 
-          class="store-item" 
-          v-for="store in stores" 
-          :key="store.id" 
-          @click="handleStoreSelected(store.id)"
-          :class="{ 'active': store.id === currentStoreId }">
-          
-            <v-card>
-              <v-img :src="store.image_url ? store.image_url : defaultShopImage" height="150px" width="150px" cover></v-img>
-              <v-card-title class="text-center">{{ store.name }}</v-card-title>
-            </v-card>
-          </div>
-          <v-btn icon @click="fetchMoreStores" class="load-more-btn mr-4">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </div>
+        <p v-if="orders.length === 0">Aviso: Não há histórico de pedidos.</p>
       </section>
 
       <section>
-        <div class="ml-6">
-          <h2 class="text-3xl font-bold ">Pedidos da loja selecionada</h2>
-        </div>
-        <div v-if="!currentStoreId">
-          <p class="mt-4 ml-6">Selecione uma loja antes de visualizar os pedidos.</p>
-        </div>
-        <div v-else-if="orders.length === 0">
-          <p class="mt-4 ml-6">Não há pedidos disponíveis para esta loja.</p>
-        </div>
-        <div v-else>
           <v-container fluid>
             <v-row>
               <v-col
@@ -156,7 +104,6 @@ const closeModal = () => {
           <div v-if="orderPagination.next" class="text-center m-6">
             <v-btn color="red-accent-4" @click="fetchMoreOrders">Carregar Mais Pedidos</v-btn>
           </div>
-        </div>
       </section>
 
       <OrderModal v-if="selectedOrder" :order="selectedOrder" @close="closeModal" />
@@ -196,35 +143,31 @@ const closeModal = () => {
 }
 
 .bg-blue {
-  background-color: #0000ff; /* Azul */
+  background-color: #0000ff;
 }
 
 .bg-green {
-  background-color: #00ff00; /* Verde */
+  background-color: #00ff00;
 }
 
 .bg-light-blue {
-  background-color: #87ceeb; /* Azul Claro */
+  background-color: #87ceeb;
 }
 
 .bg-orange {
-  background-color: #ffa500; /* Laranja */
+  background-color: #ffa500;
 }
 
 .bg-grey {
-  background-color: #d3d3d3; /* Cinza */
+  background-color: #d3d3d3;
 }
 
 .bg-red {
-  background-color: #ff0000; /* Vermelho */
+  background-color: #ff0000;
 }
 
 .order-card {
   cursor: pointer;
   margin-bottom: 1rem;
-}
-
-.store-item.active {
-  border: 2px solid blue;
 }
 </style>
