@@ -6,7 +6,7 @@
       <div>
         <div><LinkPathNav :route="`stores/${storeId}`" :clickableSegments="[0, 1]" /></div>
         <div class="ml-6">
-          <h1 class="text-3xl font-bold">Store</h1>
+          <h1 class="text-3xl font-bold">Lojas</h1>
         </div>
         <div v-if="store">
           <v-card class="mx-auto" max-width="400">
@@ -18,7 +18,6 @@
                 gradient="to bottom, rgba(0,0,0,.5), rgba(0,0,0,.5)"
               >
                 <v-card-title>
-                  <v-icon v-if="store.hidden">mdi-eye-off</v-icon>
                   {{ store.name }}
                 </v-card-title>
               </v-img>
@@ -28,22 +27,14 @@
               </v-card-subtitle>
 
               <v-card-actions>
-                <router-link :to="{ path: '/stores/' + store.id }">
+                <router-link :to="{ path: '/stores/' }">
                   <v-btn color="blue">Voltar</v-btn>
-                </router-link>
-                <router-link :to="{ path: '/stores/' + store.id + '/edit' }">
-                  <v-btn color="orange">Editar</v-btn>
                 </router-link>
               </v-card-actions>
             </v-card>
         </div>
         <div class="ml-6 mt-4">
-          <h2 class="text-3xl font-bold ">Products</h2>
-          <router-link :to=" { path: `/stores/${storeId}/products/new`}">
-            <v-btn class="bg-red-accent-4 mt-4" prepend-icon="mdi-plus">
-              Novo Produto
-            </v-btn>
-          </router-link>
+          <h2 class="text-3xl font-bold ">Produtos</h2>
         </div>
         <div v-if="products.length > 0">
           <v-row class="mt-5 ml-5 mr-5">
@@ -57,7 +48,6 @@
                   gradient="to bottom, rgba(0,0,0,.5), rgba(0,0,0,.5)"
                 >
                   <v-card-title>
-                  <v-icon v-if="product.hidden">mdi-eye-off</v-icon>
                     {{ product.title }}
                   </v-card-title>
                 </v-img>
@@ -75,10 +65,7 @@
                   <div class="font-bold">{{product.price ? product.price  : '⠀'}}</div>
                 </v-card-text>
                 <v-card-actions>
-                  <router-link :to="{ path: `/stores/${storeId}/products/${product.id}/edit` }">
-                    <v-btn color="orange">Editar</v-btn>
-                  </router-link>
-                  <v-btn color="red" @click="openDeleteModal(product)">Deletar</v-btn>
+                  <v-btn color="green" class="text-black" prepend-icon="mdi-cart" variant="flat" @click="openCartInsertionModal(product)">Adicionar</v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -86,7 +73,7 @@
           <div v-if="isStoreLoaded  && pagination.next" class="text-center m-6">
             <v-btn color="red-accent-4" @click="fetchMoreProducts">Carregar mais produtos</v-btn>
           </div>
-          <v-dialog v-model="dialogDelete" max-width="500">
+          <v-dialog v-model="dialogCart" max-width="500">
             <v-card>
               <v-card-title class="headline">
                 Confirmar Exclusão
@@ -96,10 +83,10 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="dialogDelete = false">
+                <v-btn color="blue darken-1" text @click="dialogCart = false">
                   Cancelar
                 </v-btn>
-                <v-btn color="red darken-1" text @click="confirmDelete">
+                <v-btn color="red darken-1" text @click="confirmCartInsertion">
                   Deletar
                 </v-btn>
               </v-card-actions>
@@ -136,7 +123,7 @@ const storeId = route.params.storeId as string;
 const pagination = ref<Pagination>({ current: 1, pages: 1 });
 
 const isStoreLoaded = ref(false);
-const dialogDelete = ref(false);
+const dialogCart = ref(false);
 const selectedProduct = ref<ProductResponse | null>(null);
 
 onMounted(() => {
@@ -185,16 +172,16 @@ const fetchMoreProducts = async () => {
   }
 };
 
-const openDeleteModal = (product: ProductResponse) => {
+const openCartInsertionModal = (product: ProductResponse) => {
   selectedProduct.value = product;
-  dialogDelete.value = true;
+  dialogCart.value = true;
 };
 
-const confirmDelete = async () => {
+const confirmCartInsertion = async () => {
   try {
     await deleteStoreProduct(storeId, selectedProduct.value.id);
     fetchProducts()
-    dialogDelete.value = false;
+    dialogCart.value = false;
   } catch (error) {
     // errorMessage.value = standardizeErrorMessage(error);
   }
