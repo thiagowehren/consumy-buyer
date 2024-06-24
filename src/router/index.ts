@@ -62,37 +62,6 @@ const router = createRouter({
       meta: { title: 'Store - Delivery' }
     },
     {
-      path: '/stores/new',
-      name: 'store-new',
-      beforeEnter: redirectIfGuest,
-      component: () => import('@/components/StoresForm.vue'),
-      meta: { title: 'New Store - Delivery' }
-    },
-    {
-      path: '/stores/:storeId/edit',
-      name: 'store-edit',
-      beforeEnter: redirectIfGuest,
-      component: () => import('@/components/StoresForm.vue'),
-      props: true,
-      meta: { title: 'Edit Store - Delivery' }
-    },
-    {
-      path: '/stores/:storeId/products/:productId/edit',
-      name: 'product-edit',
-      beforeEnter: redirectIfGuest,
-      component: () => import('@/components/ProductsForm.vue'),
-      props: true,
-      meta: { title: 'Edit Product - Delivery' }
-    },
-    {
-      path: '/stores/:storeId/products/new',
-      name: 'product-new',
-      beforeEnter: redirectIfGuest,
-      component: () => import('@/components/ProductsForm.vue'),
-      props: true,
-      meta: { title: 'New Product - Delivery' }
-    },
-    {
       path: '/orders',
       name: 'orders',
       beforeEnter: redirectIfGuest,
@@ -105,14 +74,7 @@ const router = createRouter({
       beforeEnter: redirectIfGuest,
       component: () => import('@/components/OrderDetails.vue'),
       meta: { title: 'Order - Delivery' }
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      beforeEnter: redirectIfGuest,
-      component: () => import('@/components/DashboardPage.vue'),
-      meta: { title: 'Dashboard - Delivery' }
-    },
+    }
   ]
 })
 
