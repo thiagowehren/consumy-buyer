@@ -21,12 +21,7 @@
         </div>
         <div v-else>
           <p class="text-gray-600">
-            Nenhuma loja disponível para ser destacada, crie uma
-            <RouterLink :to="{ name: 'store-new' }">
-              <v-btn color="red" density="compact" variant="text">
-                nova loja
-              </v-btn>
-            </RouterLink>
+            Nenhuma loja disponível para ser destacada.
           </p>
         </div>
       </div>
