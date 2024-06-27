@@ -2,6 +2,7 @@ import { Pagination } from './paginationDTO';
 import { ProductResponse } from './productDTO'
 
 export interface OrderResponse {
+    store_id?: number;
     id: number;
     state: string;
     total_price: string;

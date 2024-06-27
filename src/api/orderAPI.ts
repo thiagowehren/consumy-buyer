@@ -36,7 +36,11 @@ export async function getAllUserOrders(page: number = 1): Promise<OrdersResponse
 export async function createOrder(orderData: CreateOrder): Promise<OrderResponse> {
     const response = await request<OrderResponse>(`/buyers/orders`, {
         method: "POST",
-        body: { ...orderData }
+        body: orderData,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
     });
     if (!response) {
         throw new Error("Failed to create order.");
