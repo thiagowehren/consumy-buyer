@@ -30,3 +30,13 @@ export const formatPrice = (value: string): string => {
 
   return `${integerPart}${decimalPart}`;
 }
+
+export const formatToBRL = (value: number): string => {
+  const formattedValue = value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  });
+
+  return formattedValue;
+};
