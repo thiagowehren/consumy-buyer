@@ -22,58 +22,56 @@
             <v-expansion-panels>
               <!-- stores -->
               <v-expansion-panel>
-                  <v-card v-if="searchResultsVisible">
-                    <v-card-title>
-                      <h2>Stores</h2>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-list>
-                        <v-list-item v-for="store in searchResults.stores" :key="store.id" class="bg-grey-lighten-3 mb-1">
-                          <a :href="'/stores/' + store.id">
-                            <div class="flex items-center">
-                              <div>
-                                <v-img :src="store.image_url ? store.image_url : defaultStoreImage" alt="Imagem da Loja" class="w-24 h-24 object-cover rounded-lg mr-4" cover/>
-                              </div>
-                              <div>
-                                <div class="flex items-center">
-                                  <div v-html="highlightText(store.name, searchQuery)"></div>
-                                </div>
-                              </div>
+                <v-card v-if="searchResultsVisible">
+                  <v-card-title>
+                    <h2>Stores</h2>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-list>
+                      <v-list-item v-for="store in searchResults.stores" :key="store.id" class="bg-grey-lighten-3 mb-1">
+                        <a :href="'/stores/' + store.id">
+                          <div class="flex items-center">
+                            <div>
+                              <v-img :src="store.image_url ? store.image_url : defaultStoreImage" alt="Imagem da Loja" class="w-24 h-24 object-cover rounded-lg mr-4" cover/>
                             </div>
-                          </a>
-                        </v-list-item>
-                      </v-list>
-                    </v-card-text>
-                  </v-card>
-                
+                            <div>
+                              <div v-html="highlightText(store.name, searchQuery)"></div>
+                            </div>
+                          </div>
+                        </a>
+                      </v-list-item>
+                    </v-list>
+                  </v-card-text>
+                </v-card>
+
               </v-expansion-panel>
 
               <!-- products -->
               <v-expansion-panel>
-              
-                  <v-card v-if="searchResultsVisible">
-                    <v-card-title>
-                      <h2>Products</h2>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-list>
-                        <v-list-item v-for="product in searchResults.products" :key="product.id">
-                          <a :href="'/stores/' + product.store_id">
-                            <div class="flex items-center">
-                              <div>
-                                <v-img :src="product.image_url ? product.image_url : defaultProductImage" cover alt="Imagem do Produto" class="w-24 h-24 object-cover rounded-lg mr-4"/>
-                              </div>
-                              <div class="flex-1 pd-2">
-                                <span v-html="highlightText(product.title, searchQuery)"></span>
-                                <br>
-                                <span class="text-gray-400">{{ product.price }}</span>
-                              </div>
+
+                <v-card v-if="searchResultsVisible">
+                  <v-card-title>
+                    <h2>Products</h2>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-list>
+                      <v-list-item v-for="product in searchResults.products" :key="product.id">
+                        <a :href="'/stores/' + product.store_id">
+                          <div class="flex items-center">
+                            <div>
+                              <v-img :src="product.image_url ? product.image_url : defaultProductImage" cover alt="Imagem do Produto" class="w-24 h-24 object-cover rounded-lg mr-4"/>
                             </div>
-                          </a>
-                        </v-list-item>
-                      </v-list>
-                    </v-card-text>
-                  </v-card>
+                            <div class="flex-1 pd-2">
+                              <span v-html="highlightText(product.title, searchQuery)"></span>
+                              <br>
+                              <span class="text-gray-400">{{ product.price }}</span>
+                            </div>
+                          </div>
+                        </a>
+                      </v-list-item>
+                    </v-list>
+                  </v-card-text>
+                </v-card>
               </v-expansion-panel>
             </v-expansion-panels>
           </v-card>
@@ -89,6 +87,7 @@
       <div class="flex items-center space-x-4">
         <template v-if="isLoggedIn">
           <div class="flex items-center space-x-4">
+            <v-btn exact text class="text-red-accent-4" icon="mdi-cart-outline" @click="dialogCart = true"></v-btn>
             <span v-if="currentUser.email" class="text-red-accent-4 underline">{{ currentUser.email }}</span>
             <v-btn @click="logout" class="text-red-accent-4" append-icon="mdi-logout" text>
               Sair
@@ -110,6 +109,55 @@
           </div>
         </template>
       </div>
+      <v-dialog v-model="dialogCart" max-width="800">
+        <v-card>
+          <v-card-title>Carrinho</v-card-title>
+          <v-card-text>
+            <div v-if="cartStore.items && cartStore.items.length" class="table-container">
+              <table class="order-items-table">
+                <thead>
+                  <tr>
+                    <th>Imagem</th>
+                    <th>Produto</th>
+                    <th>Preço</th>
+                    <th>Qtde</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in cartStore.items" :key="item.id">
+                    <td>
+                      <img :src="item.image_url || defaultProductImage" :alt="'Imagem do Produto'" class="product-image" />
+                    </td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ item.total_price }}</td>
+                    <td>
+                      <v-icon @click="removeFromCart(item.id)">mdi-delete</v-icon>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>Total: </strong></td>
+                    <td>{{ cartStore.totalPrice }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-else>
+              <p>Carrinho vazio.</p>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="green" @click="checkout">Finalizar Compra</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </v-app-bar>
 </template>
@@ -122,6 +170,7 @@ import { searchAll } from '@/api/searchAPI';
 import { debounce } from 'lodash';
 import defaultProductImage from '@/assets/dish-default-256.png';
 import defaultStoreImage from '@/assets/shop-default-256.png';
+import { useCartStore } from '@/stores/cartStore';
 
 const auth = new Auth();
 const isLoggedIn = ref(auth.isLoggedIn());
@@ -145,7 +194,7 @@ const searchResults = ref({ stores: [], products: [] });
 const searchResultsVisible = ref(false);
 
 const performSearch = async () => {
-  console.log('Pesquisando por:', searchQuery.value);
+  // console.log('Pesquisando por:', searchQuery.value);
   try {
     const response = await searchAll(searchQuery.value);
     searchResults.value = response.search;
@@ -175,11 +224,59 @@ const highlightText = (originalText, query) => {
   return highlightedText;
 };
 
-
-const debouncedSearch = debounce(performSearch, 300)
+const debouncedSearch = debounce(performSearch, 300);
 
 watchEffect(() => {
   isLoggedIn.value = auth.isLoggedIn();
   currentUser.value = auth.currentUser();
 });
+
+const cartStore = useCartStore();
+const dialogCart = ref(false);
+
+const checkout = () => {
+  cartStore.checkout();
+};
+
+const removeFromCart = (productId: number) => {
+  cartStore.removeFromCart(productId);
+};
+
 </script>
+
+
+<style scoped>
+.order-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-items-table th,
+.order-items-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.order-items-table th {
+  background-color: #f5f5f5;
+  color: #333333;
+  font-weight: bold;
+}
+
+.order-items-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.order-items-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.product-image {
+  width: 50px;
+  height: 50px;
+}
+</style>
